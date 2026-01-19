@@ -1,0 +1,92 @@
+@import "tailwindcss";
+
+/* Custom color utilities using Tailwind v4 CSS variables */
+@theme {
+  --color-cosmic-void: #050508;
+  --color-cyber-blue: #4f9eff;
+  --color-neon-cyan: #00ffff;
+  --color-temple-gold: #ffd700;
+}
+
+/* Cosmic Void - The infinite darkness of space */
+:root {
+  --cosmic-void: #050508;
+  --cyber-blue: #4f9eff;
+  --neon-cyan: #00ffff;
+  --temple-gold: #ffd700;
+  --grid-line: rgba(79, 158, 255, 0.1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  background: var(--cosmic-void);
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+/* Canvas container */
+#__next,
+main {
+  height: 100%;
+  width: 100%;
+}
+
+/* Hide scrollbars */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* HUD Styling */
+.hud-panel {
+  backdrop-filter: blur(8px);
+  background: rgba(5, 5, 8, 0.7);
+  border: 1px solid rgba(79, 158, 255, 0.3);
+  box-shadow:
+    0 0 20px rgba(79, 158, 255, 0.1),
+    inset 0 0 20px rgba(79, 158, 255, 0.05);
+}
+
+.hud-text {
+  text-shadow: 0 0 10px currentColor;
+}
+
+/* Scanline effect for retro-future feel */
+.scanlines::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.1) 2px,
+      rgba(0, 0, 0, 0.1) 4px);
+}
+
+/* Glow animation for active elements */
+@keyframes pulse-glow {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.pulse-glow {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
