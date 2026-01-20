@@ -38,7 +38,7 @@ export function Vimana() {
     const trailRearRef = useRef<THREE.Object3D>(null!);
 
     const controls = useControls();
-    const { setFlightData, setBoostActive, isGameStarted, isGearDeployed, toggleGear } = useFlightStore();
+    const { setFlightData, setBoostActive, gamePhase, isGearDeployed, toggleGear } = useFlightStore();
     const { world, rapier } = useRapier();
 
     // Debounce for gear toggle
@@ -111,7 +111,7 @@ export function Vimana() {
         const targetVel = new THREE.Vector3(0, 0, 0);
 
         // Only allow control if game started
-        if (isGameStarted) {
+        if (gamePhase === 'playing') {
             if (controls.forward) {
                 targetVel.add(localForward.clone().multiplyScalar(MAX_SPEED));
                 targetPitch.current = MAX_PITCH_TILT;
@@ -125,11 +125,6 @@ export function Vimana() {
             if (controls.strafeLeft) {
                 targetVel.add(localRight.clone().multiplyScalar(-MAX_SPEED * 0.8));
                 strafe = -1;
-                thrusting = true;
-            }
-            if (controls.strafeRight) {
-                targetVel.add(localRight.clone().multiplyScalar(MAX_SPEED * 0.8));
-                strafe = 1;
                 thrusting = true;
             }
             if (controls.strafeRight) {
@@ -202,7 +197,7 @@ export function Vimana() {
         state.camera.position.lerp(cameraTargetPos, CAMERA_LERP_SPEED * delta);
 
         // Intro Camera Mode
-        if (!isGameStarted) {
+        if (gamePhase !== 'playing') {
             // Cinematic frontal view
             const time = state.clock.elapsedTime;
             // Orbit slowly around front

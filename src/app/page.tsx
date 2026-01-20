@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import { Overlay } from '@/components/ui/Overlay';
+import { InfoOverlay } from '@/components/ui/InfoOverlay';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
 import { ProjectModal } from '@/components/ui/ProjectModal';
 
@@ -20,6 +21,7 @@ export default function Home() {
 
             {/* Mandala HUD Overlay */}
             <Overlay />
+            <InfoOverlay />
 
             {/* Project Modal (appears when flying through portals) */}
             <ProjectModal />

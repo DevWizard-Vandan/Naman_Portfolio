@@ -30,14 +30,21 @@ export function ProjectPortal({
         setCurrentProject(project.id);
     };
 
-    if (!nodes?.Arch) {
+    if (!nodes?.Arch?.geometry?.attributes?.position) {
         return null;
     }
 
     return (
         <group position={position} rotation={rotation} scale={scale}>
-            {/* The Arch Mesh */}
-            <RigidBody type="fixed" colliders="trimesh">
+            {/* The Arch Mesh - using manual colliders to avoid geometry property errors */}
+            <RigidBody type="fixed" colliders={false}>
+                {/* Left leg */}
+                <CuboidCollider args={[0.5, 3, 0.5]} position={[-2.5, 3, 0]} />
+                {/* Right leg */}
+                <CuboidCollider args={[0.5, 3, 0.5]} position={[2.5, 3, 0]} />
+                {/* Top bar */}
+                <CuboidCollider args={[3, 0.5, 0.5]} position={[0, 6, 0]} />
+
                 <primitive
                     object={nodes.Arch.clone()}
                     castShadow

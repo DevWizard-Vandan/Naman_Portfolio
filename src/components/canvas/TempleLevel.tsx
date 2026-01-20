@@ -3,7 +3,7 @@
 import { useRef, useMemo, useEffect } from 'react';
 import { useFrame } from '@react-three/fiber';
 import { useGLTF } from '@react-three/drei';
-import { RigidBody } from '@react-three/rapier';
+import { RigidBody, CuboidCollider, CylinderCollider } from '@react-three/rapier';
 import * as THREE from 'three';
 import { ProjectPortal } from './ProjectPortal';
 import { projects } from '@/data/projects';
@@ -114,7 +114,7 @@ function PillarRunway() {
     }, []);
 
     const pillarMesh = nodes?.Pillar as THREE.Mesh;
-    if (!pillarMesh) return null;
+    if (!pillarMesh?.geometry?.attributes?.position) return null;
 
     // Create emissive material for pillars
     const pillarMaterial = useMemo(() => new THREE.MeshStandardMaterial({
@@ -128,7 +128,8 @@ function PillarRunway() {
     return (
         <group>
             {pillarData.map((pillar, i) => (
-                <RigidBody key={i} type="fixed" colliders="hull" position={pillar.position}>
+                <RigidBody key={i} type="fixed" colliders={false} position={pillar.position}>
+                    <CylinderCollider args={[5, pillar.scale * 1.2]} />
                     <mesh
                         geometry={pillarMesh.geometry}
                         material={pillarMaterial}
@@ -163,12 +164,13 @@ function ProjectIsland({ position, projectId, rotation = 0 }: ProjectIslandProps
     const project = projects.find(p => p.id === projectId);
 
     const platformMesh = nodes?.Platform as THREE.Mesh;
-    if (!platformMesh || !project) return null;
+    if (!platformMesh?.geometry?.attributes?.position || !project) return null;
 
     return (
         <group position={position} rotation={[0, rotation, 0]}>
             {/* Platform base */}
-            <RigidBody type="fixed" colliders="trimesh">
+            <RigidBody type="fixed" colliders={false}>
+                <CuboidCollider args={[10, 0.5, 10]} />
                 <primitive
                     object={platformMesh.clone()}
                     scale={2.5}
@@ -202,10 +204,11 @@ function SpawnPlatform() {
     const { nodes } = useGLTF('/models/Temple_Kit.glb') as any;
 
     const platformMesh = nodes?.Platform as THREE.Mesh;
-    if (!platformMesh) return null;
+    if (!platformMesh?.geometry?.attributes?.position) return null;
 
     return (
-        <RigidBody type="fixed" colliders="trimesh" position={[0, -8, 0]}>
+        <RigidBody type="fixed" colliders={false} position={[0, -8, 0]}>
+            <CuboidCollider args={[12, 0.5, 12]} />
             <primitive
                 object={platformMesh.clone()}
                 scale={3}

@@ -80,47 +80,21 @@ function MandalaCrosshair({ isBoostActive }: { isBoostActive: boolean }) {
 }
 
 export function Overlay() {
-    const { altitude, speed, isBoostActive, isGameStarted, startGame } = useFlightStore();
+    const { altitude, speed, isBoostActive, gamePhase } = useFlightStore();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
-
-        const handleKeyDown = (e: KeyboardEvent) => {
-            if (!isGameStarted && (e.code === 'Enter' || e.code === 'KeyE')) {
-                startGame();
-            }
-        };
-        window.addEventListener('keydown', handleKeyDown);
-        return () => window.removeEventListener('keydown', handleKeyDown);
-    }, [isGameStarted, startGame]);
+    }, []);
 
     if (!mounted) return null;
 
+    const isPlaying = gamePhase === 'playing';
+
     return (
         <div className="fixed inset-0 pointer-events-none z-10">
-            {/* INTRO SCREEN */}
-            <div
-                className={`absolute inset-0 flex flex-col items-center justify-center transition-opacity duration-1000 ${isGameStarted ? 'opacity-0 pointer-events-none' : 'opacity-100'
-                    }`}
-                style={{ background: 'rgba(0,0,0,0.4)' }}
-            >
-                <h1 className="text-6xl text-transparent bg-clip-text bg-gradient-to-b from-amber-200 to-amber-500 font-bold tracking-widest uppercase mb-4"
-                    style={{ fontFamily: 'Cinzel, serif', textShadow: '0 0 30px rgba(255, 180, 0, 0.5)' }}>
-                    Vimana
-                </h1>
-                <p className="text-cyan-400/80 tracking-[0.5em] text-sm mb-12 uppercase">
-                    Journey into the Unknown
-                </p>
-                <div className="animate-pulse border border-cyan-500/30 px-6 py-3 rounded-full bg-black/40 backdrop-blur-md">
-                    <span className="text-cyan-400 font-mono tracking-wider text-sm">
-                        PRESS <span className="text-yellow-400 font-bold mx-1">E</span> OR <span className="text-yellow-400 font-bold mx-1">ENTER</span> TO START
-                    </span>
-                </div>
-            </div>
-
-            {/* GAME HUD (Hidden during Intro) */}
-            <div className={`transition-opacity duration-1000 ${isGameStarted ? 'opacity-100' : 'opacity-0'}`}>
+            {/* GAME HUD (Hidden when not playing) */}
+            <div className={`transition-opacity duration-1000 ${isPlaying ? 'opacity-100' : 'opacity-0'}`}>
 
                 {/* Top-left: Flight telemetry panel */}
                 <div
@@ -273,6 +247,7 @@ export function Overlay() {
                         <span><kbd className="text-yellow-400 font-bold">Space</kbd> Lift</span>
                         <span><kbd className="text-cyan-400 font-bold">Shift</kbd> Descend</span>
                         <span><kbd className="text-green-400 font-bold">G</kbd> Gear</span>
+                        <span><kbd className="text-purple-400 font-bold">F</kbd> Interact</span>
                     </div>
                 </div>
             </div>
