@@ -122,14 +122,14 @@ function PostProcessing() {
 
     return (
         <EffectComposer>
-            {bloomEnabled && (
+            {bloomEnabled ? (
                 <Bloom
                     intensity={2.5}
                     luminanceThreshold={0.1}
                     luminanceSmoothing={0.95}
                     mipmapBlur
                 />
-            )}
+            ) : <></>}
             <ChromaticAberration
                 blendFunction={BlendFunction.NORMAL}
                 offset={[0.0008, 0.0008]}
