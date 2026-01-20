@@ -14,6 +14,12 @@ interface FlightState {
     // Landing Gear
     isGearDeployed: boolean;
     toggleGear: () => void;
+
+    // Project Interaction
+    currentProjectId: string | null;
+    unlockedProjects: string[];
+    setCurrentProject: (id: string | null) => void;
+    unlockProject: (id: string) => void;
 }
 
 export const useFlightStore = create<FlightState>((set) => ({
@@ -26,6 +32,17 @@ export const useFlightStore = create<FlightState>((set) => ({
     isGameStarted: false,
     startGame: () => set({ isGameStarted: true }),
 
-    isGearDeployed: true, // Default deployed on start
+    isGearDeployed: true,
     toggleGear: () => set((state) => ({ isGearDeployed: !state.isGearDeployed })),
+
+    // Project Interaction
+    currentProjectId: null,
+    unlockedProjects: [],
+    setCurrentProject: (id) => set({ currentProjectId: id }),
+    unlockProject: (id) => set((state) => ({
+        unlockedProjects: state.unlockedProjects.includes(id)
+            ? state.unlockedProjects
+            : [...state.unlockedProjects, id]
+    })),
 }));
+

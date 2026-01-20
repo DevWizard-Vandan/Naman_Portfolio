@@ -8,10 +8,12 @@ import {
     MeshReflectorMaterial,
     Sparkles
 } from '@react-three/drei';
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing';
+import { EffectComposer, Bloom, Vignette, ChromaticAberration } from '@react-three/postprocessing';
+import { BlendFunction } from 'postprocessing';
 import { Suspense } from 'react';
 import * as THREE from 'three';
 import { Vimana } from './Vimana';
+import { TempleLevel } from './TempleLevel';
 
 // Temple pillar with ornate details
 function TemplePillar({ position, height = 4 }: { position: [number, number, number]; height?: number }) {
@@ -142,47 +144,58 @@ function TemplePlatform({ position, size }: {
 function TempleFloor() {
     return (
         <RigidBody type="fixed" colliders="cuboid">
-            {/* Reflective floor - "wet street" effect */}
+            {/* Reflective floor - vivid neon reflection */}
             <mesh receiveShadow rotation={[-Math.PI / 2, 0, 0]} position={[0, 0, 0]}>
-                <planeGeometry args={[150, 150]} />
+                <planeGeometry args={[200, 200]} />
                 <MeshReflectorMaterial
-                    blur={[300, 100]}
+                    blur={[400, 200]}
                     resolution={1024}
                     mixBlur={1}
-                    mixStrength={50}
-                    roughness={0.9}
-                    depthScale={1.2}
-                    minDepthThreshold={0.4}
-                    maxDepthThreshold={1.4}
-                    color="#080810"
-                    metalness={0.5}
-                    mirror={0.5}
+                    mixStrength={80}
+                    roughness={0.85}
+                    depthScale={1.5}
+                    minDepthThreshold={0.3}
+                    maxDepthThreshold={1.6}
+                    color="#040408"
+                    metalness={0.6}
+                    mirror={0.7}
                 />
             </mesh>
 
-            {/* Grid lines overlay */}
+            {/* Grid lines overlay - brighter */}
             <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.02, 0]}>
-                <planeGeometry args={[150, 150, 75, 75]} />
+                <planeGeometry args={[200, 200, 100, 100]} />
                 <meshBasicMaterial
                     color="#4f9eff"
                     wireframe
                     transparent
-                    opacity={0.08}
+                    opacity={0.12}
                 />
             </mesh>
 
-            {/* Center mandala - concentric rings */}
-            {[3, 5, 8, 12].map((radius, i) => (
+            {/* Center mandala - more rings, stronger glow */}
+            {[2, 4, 6, 9, 13, 18].map((radius, i) => (
                 <mesh key={i} rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.03 + i * 0.005, 0]}>
-                    <ringGeometry args={[radius - 0.15, radius, 64]} />
+                    <ringGeometry args={[radius - 0.2, radius, 64]} />
                     <meshBasicMaterial
-                        color={i % 2 === 0 ? '#ffd700' : '#4f9eff'}
+                        color={i % 3 === 0 ? '#ffd700' : i % 3 === 1 ? '#00ffff' : '#ff00ff'}
                         transparent
-                        opacity={0.3 - i * 0.05}
+                        opacity={0.5 - i * 0.05}
                         toneMapped={false}
                     />
                 </mesh>
             ))}
+
+            {/* Outer glow ring */}
+            <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.01, 0]}>
+                <ringGeometry args={[24, 26, 64]} />
+                <meshBasicMaterial
+                    color="#ffd700"
+                    transparent
+                    opacity={0.15}
+                    toneMapped={false}
+                />
+            </mesh>
         </RigidBody>
     );
 }
@@ -220,53 +233,62 @@ function TempleObstacles() {
     );
 }
 
-// Atmospheric lighting
+// Dramatic atmospheric lighting
 function TempleLighting() {
     return (
         <>
-            {/* Deep ambient */}
-            <ambientLight intensity={0.06} color="#3a2a5a" />
+            {/* Deep cosmic ambient */}
+            <ambientLight intensity={0.08} color="#2a1a4a" />
 
-            {/* Main directional (moonlight) */}
+            {/* Main directional (moonlight) - cooler, more mystical */}
             <directionalLight
-                position={[40, 60, 30]}
-                intensity={0.35}
-                color="#9090ff"
+                position={[50, 80, 40]}
+                intensity={0.45}
+                color="#8080ff"
                 castShadow
                 shadow-mapSize={[2048, 2048]}
-                shadow-camera-far={150}
-                shadow-camera-left={-50}
-                shadow-camera-right={50}
-                shadow-camera-top={50}
-                shadow-camera-bottom={-50}
+                shadow-camera-far={200}
+                shadow-camera-left={-80}
+                shadow-camera-right={80}
+                shadow-camera-top={80}
+                shadow-camera-bottom={-80}
             />
 
-            {/* Warm temple torches */}
-            <pointLight position={[-18, 4, -22]} color="#ff6600" intensity={5} distance={25} />
-            <pointLight position={[18, 4, -28]} color="#ff8800" intensity={5} distance={25} />
-            <pointLight position={[0, 6, -50]} color="#ffaa00" intensity={6} distance={30} />
-            <pointLight position={[-28, 5, -45]} color="#ff7700" intensity={4} distance={22} />
-            <pointLight position={[28, 5, -55]} color="#ff9900" intensity={4} distance={22} />
+            {/* Warm temple torches - intense flames */}
+            <pointLight position={[-18, 4, -22]} color="#ff5500" intensity={8} distance={30} />
+            <pointLight position={[18, 4, -28]} color="#ff7700" intensity={8} distance={30} />
+            <pointLight position={[0, 8, -50]} color="#ffaa00" intensity={10} distance={40} />
+            <pointLight position={[-28, 5, -45]} color="#ff6600" intensity={6} distance={25} />
+            <pointLight position={[28, 5, -55]} color="#ff8800" intensity={6} distance={25} />
 
-            {/* Cold cyber accents */}
-            <pointLight position={[-35, 10, -35]} color="#ff00ff" intensity={3} distance={45} />
-            <pointLight position={[35, 12, -45]} color="#00ffff" intensity={3} distance={45} />
-            <pointLight position={[0, 25, -80]} color="#4f9eff" intensity={5} distance={60} />
+            {/* Cyber accent lights - neon glow */}
+            <pointLight position={[-40, 15, -40]} color="#ff00ff" intensity={6} distance={60} />
+            <pointLight position={[40, 18, -50]} color="#00ffff" intensity={6} distance={60} />
+            <pointLight position={[0, 35, -100]} color="#4f9eff" intensity={10} distance={80} />
+
+            {/* Upward rim lights for drama */}
+            <pointLight position={[0, -2, -30]} color="#ffd700" intensity={4} distance={40} />
+            <pointLight position={[-20, -2, -60]} color="#00ffff" intensity={3} distance={35} />
+            <pointLight position={[20, -2, -60]} color="#ff00ff" intensity={3} distance={35} />
         </>
     );
 }
 
-// Post-processing stack
+// Cinematic Post-processing stack
 function PostProcessing() {
     return (
         <EffectComposer>
             <Bloom
-                intensity={1.8}
-                luminanceThreshold={0.15}
-                luminanceSmoothing={0.9}
+                intensity={2.5}
+                luminanceThreshold={0.1}
+                luminanceSmoothing={0.95}
                 mipmapBlur
             />
-            <Vignette darkness={0.6} offset={0.25} />
+            <ChromaticAberration
+                blendFunction={BlendFunction.NORMAL}
+                offset={[0.0008, 0.0008]}
+            />
+            <Vignette darkness={0.7} offset={0.2} />
         </EffectComposer>
     );
 }
@@ -284,15 +306,15 @@ export function Experience() {
             style={{ background: '#020206' }}
         >
             <Suspense fallback={null}>
-                {/* Cosmic starfield */}
+                {/* Dense cosmic starfield */}
                 <Stars
-                    radius={200}
-                    depth={80}
-                    count={10000}
-                    factor={6}
-                    saturation={0.2}
+                    radius={300}
+                    depth={100}
+                    count={15000}
+                    factor={8}
+                    saturation={0.3}
                     fade
-                    speed={0.2}
+                    speed={0.15}
                 />
 
                 {/* Environment for reflections */}
@@ -301,25 +323,47 @@ export function Experience() {
                 {/* Physics world */}
                 <Physics gravity={[0, -9.81, 0]} debug={false}>
                     <TempleFloor />
-                    <TempleObstacles />
+                    <TempleLevel />
                     <Vimana />
                 </Physics>
 
                 <TempleLighting />
                 <PostProcessing />
 
-                {/* Volumetric fog - hides world edges, makes neon pop */}
-                <fog attach="fog" args={['#050508', 5, 80]} />
+                {/* Atmospheric fog - deep blue fade */}
+                <fog attach="fog" args={['#030310', 15, 180]} />
 
-                {/* Ambient floating particles */}
+                {/* Golden ambient particles - foreground */}
+                <Sparkles
+                    count={300}
+                    scale={[120, 60, 150]}
+                    position={[0, 25, -50]}
+                    size={3}
+                    speed={0.08}
+                    color="#ffd700"
+                    opacity={0.6}
+                />
+
+                {/* Cyan ambient particles - background */}
                 <Sparkles
                     count={200}
-                    scale={[100, 40, 100]}
-                    position={[0, 20, -40]}
+                    scale={[150, 80, 200]}
+                    position={[0, 40, -100]}
                     size={2}
-                    speed={0.1}
-                    color="#ffd700"
+                    speed={0.05}
+                    color="#00ffff"
                     opacity={0.4}
+                />
+
+                {/* Magenta accent particles */}
+                <Sparkles
+                    count={100}
+                    scale={[80, 40, 100]}
+                    position={[-30, 30, -80]}
+                    size={2.5}
+                    speed={0.1}
+                    color="#ff00ff"
+                    opacity={0.5}
                 />
             </Suspense>
         </Canvas>

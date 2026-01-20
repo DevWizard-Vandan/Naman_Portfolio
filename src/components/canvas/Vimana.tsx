@@ -236,7 +236,7 @@ export function Vimana() {
         <RigidBody
             ref={rigidRef}
             type="dynamic"
-            position={[0, 2, 0]}
+            position={[0, 8, 0]}
             linearDamping={LINEAR_DAMPING}
             angularDamping={ANGULAR_DAMPING}
             mass={1}

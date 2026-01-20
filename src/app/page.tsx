@@ -3,6 +3,7 @@
 import dynamic from 'next/dynamic';
 import { Overlay } from '@/components/ui/Overlay';
 import { LoadingScreen } from '@/components/ui/LoadingScreen';
+import { ProjectModal } from '@/components/ui/ProjectModal';
 
 // Dynamic import for R3F components (avoid SSR issues)
 const Experience = dynamic(
@@ -19,6 +20,9 @@ export default function Home() {
 
             {/* Mandala HUD Overlay */}
             <Overlay />
+
+            {/* Project Modal (appears when flying through portals) */}
+            <ProjectModal />
 
             {/* Title overlay */}
             <div className="absolute top-6 left-1/2 -translate-x-1/2 text-center pointer-events-none z-20">
